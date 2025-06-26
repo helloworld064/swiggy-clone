@@ -1,0 +1,33 @@
+apiVersion: v1
+clusters:
+- cluster:
+    certificate-authority-data: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSURCVENDQWUyZ0F3SUJBZ0lJQ3Q5YkVsbFVXR2d3RFFZSktvWklodmNOQVFFTEJRQXdGVEVUTUJFR0ExVUUKQXhNS2EzVmlaWEp1WlhSbGN6QWVGdzB5TlRBMk1qWXdOak00TXpCYUZ3MHpOVEEyTWpRd05qUXpNekJhTUJVeApFekFSQmdOVkJBTVRDbXQxWW1WeWJtVjBaWE13Z2dFaU1BMEdDU3FHU0liM0RRRUJBUVVBQTRJQkR3QXdnZ0VLCkFvSUJBUUQwcWdXMjNDUFBLNitKMXdsTTVZd1lFRFNXTGRva1IwUkpEak5rM0cvQ2p6RlBSOFpoQ0d3bmFoTjIKVkEwL1NUR2V0TUpKWDJneVgyU3N5UnA4MjFKZ1loQUdqM0FleDFvMFBsOEFkZVIzY21PbDZDZ2J1Z2VkWTNJSwpMeEFBYU4zZ3JHMFVONTNoV1FvSGpkWnIyekFpZjk1K1VwZFFuSG9sMmFFc3haOUxhUmVXY2hHbndKRHhMTWFwCk5ZRkM1NEk1Q3ZTOU1WSzEzQVlCR0NiQkxEU1pRTmUvKzM3SkRTcythTC9DMkdVQ21uY3RDbzZrWWlkcDZEV2YKL2lvL1ZFMGJlSmhETGdFNllNRFFUYjdDOXFJN1JkQW41MCtzVU5za3hzdG55eHhFK1FKQ3ErMXpQQzNPa3NMdQpraXYrSFZLR2tZWUw0dEVQZTlFclgvNlFFU1ZGQWdNQkFBR2pXVEJYTUE0R0ExVWREd0VCL3dRRUF3SUNwREFQCkJnTlZIUk1CQWY4RUJUQURBUUgvTUIwR0ExVWREZ1FXQkJUR3VGYWlTYTZuTWdZaXZJaDg2aDkwMFVtdElEQVYKQmdOVkhSRUVEakFNZ2dwcmRXSmxjbTVsZEdWek1BMEdDU3FHU0liM0RRRUJDd1VBQTRJQkFRRHI0c3BMelZsMwpsaVJibVlWY2Vib2hmcXNaTURiSHR4dnIxU2JORkprNTh6WG8rQlNWdEVVQnZHT2JsOTdHUkdmMFZqV1dyaWdTClUyQ3VPTjVvKzRaRUhUZDJwUzdxSUlMTTI0SlBuN205OTNNdWJYbDU3R1NtVDdGdmFOQUMwTko4dTFzNFd6ODAKbkN3RktoaGFIZVovWENsR1pmZmJLVnBWYlFQUEdRU2tVeWRjcTZyZ0kwTGdSbzlibGZ2bUtJOTFDc0hmdTNxagpnWlZzQ2NkSDFhNnljNy9kb1prMW50UHNTLytySGRJK3N4MnlUMHNWZk5PZHo0WTZIbUt0V1dxZU8va0p0b09HCjNXMjcyZkdZZmh6Nno1YUt0MVhuVGt2YmprY2lSRVB4Q0VVdi83U0JibVY4S2MyWU1LY2luTjdYOHRBS2ZkMDkKL3Y3aUJIS1V3eUFHCi0tLS0tRU5EIENFUlRJRklDQVRFLS0tLS0K
+    server: https://281DF7A828E45BD3DD85BA7F12BC981A.gr7.eu-north-1.eks.amazonaws.com
+  name: swiggy-clone.eu-north-1.eksctl.io
+contexts:
+- context:
+    cluster: swiggy-clone.eu-north-1.eksctl.io
+    user: eksadm@swiggy-clone.eu-north-1.eksctl.io
+  name: eksadm@swiggy-clone.eu-north-1.eksctl.io
+current-context: eksadm@swiggy-clone.eu-north-1.eksctl.io
+kind: Config
+preferences: {}
+users:
+- name: eksadm@swiggy-clone.eu-north-1.eksctl.io
+  user:
+    exec:
+      apiVersion: client.authentication.k8s.io/v1beta1
+      args:
+      - eks
+      - get-token
+      - --output
+      - json
+      - --cluster-name
+      - swiggy-clone
+      - --region
+      - eu-north-1
+      command: aws
+      env:
+      - name: AWS_STS_REGIONAL_ENDPOINTS
+        value: regional
+      provideClusterInfo: false

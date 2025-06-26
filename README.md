@@ -192,68 +192,86 @@ pipeline {
 
     environment {
         SCANNER_HOME = tool 'sonarqube-scanner'
+        DOCKER_IMAGE = 'rohitjain064/swiggy-clone:latest'
     }
 
     stages {
+
         stage('Clean Workspace') {
             steps {
                 cleanWs()
             }
         }
+
         stage('Checkout from Git') {
             steps {
                 git branch: 'main', url: 'https://github.com/helloworld064/swiggy-clone.git'
             }
         }
-        stage('SonarQube Analysis') {
+        
+         stage("Sonarqube Analysis "){
+             steps{
+                 withSonarQubeEnv('SonarQube-Server') {
+                     sh ''' $SCANNER_HOME/bin/sonar-scanner -Dsonar.projectName=Swiggy-CI \
+                     -Dsonar.projectKey=Swiggy-CI '''
+                 }
+             }
+         }
+         stage("Quality Gate"){
             steps {
-                withSonarQubeEnv('SonarQube-Server') {
-                    sh '''$SCANNER_HOME/bin/sonar-scanner -Dsonar.projectName=Swiggy-CI \
-                    -Dsonar.projectKey=Swiggy-CI'''
-                }
-            }
-        }
-        stage('Quality Gate') {
-            steps {
-                script {
-                    waitForQualityGate abortPipeline: false, credentialsId: 'SonarQube-Token'
-                }
-            }
-        }
+                 script {
+                     waitForQualityGate abortPipeline: false, credentialsId: 'SonarQube-Token' 
+                 }
+             } 
+         }
+
         stage('Install Dependencies') {
             steps {
-                sh "npm install"
+                sh 'npm install'
             }
         }
+
         stage('Trivy FS Scan') {
             steps {
-                sh "trivy fs . > trivyfs.txt"
+                sh 'trivy fs . > trivyfs.txt'
             }
         }
+
         stage('Docker Build & Push') {
             steps {
                 script {
                     withDockerRegistry(credentialsId: 'dockerhub', toolName: 'docker') {
-                        sh "docker build -t swiggy-clone ."
-                        sh "docker tag swiggy-clone rohitjain064/swiggy-clone:latest"
-                        sh "docker push rohitjain064/swiggy-clone:latest"
+                        sh 'docker build -t swiggy-clone .'
+                        sh "docker tag swiggy-clone $DOCKER_IMAGE"
+                        sh "docker push $DOCKER_IMAGE"
                     }
                 }
             }
         }
+
         stage('Trivy Image Scan') {
             steps {
-                sh "trivy image ashfaque9x/swiggy-clone:latest > trivyimage.txt"
+                sh "trivy image $DOCKER_IMAGE > trivyimage.txt"
             }
         }
+
         stage('Deploy to Kubernetes') {
             steps {
                 script {
-                    dir('Kubernetes') {
-                        kubeconfig(credentialsId: 'kubernetes', serverUrl: '') {
-                            sh 'kubectl delete --all pods'
-                            sh 'kubectl apply -f deployment.yaml'
-                            sh 'kubectl apply -f service.yaml'
+                    withCredentials([usernamePassword(
+                        credentialsId: 'aws-credentials',
+                        usernameVariable: 'AWS_ACCESS_KEY_ID',
+                        passwordVariable: 'AWS_SECRET_ACCESS_KEY'
+                    )]) {
+                        withEnv(["AWS_REGION=eu-north-1"]) {
+                            dir('Kubernetes') {
+                                sh 'ls -la' // 🔍 Optional debug: show available files
+                                withKubeConfig(credentialsId: 'kubernetes') {
+                                    sh 'kubectl delete --all pods || true'
+                                    sh 'kubectl apply -f deployment.yml'
+                                    sh 'kubectl apply -f service.yml'
+                                }
+                            }
                         }
                     }
                 }
@@ -261,6 +279,7 @@ pipeline {
         }
     }
 }
+
 ```
 
 > Save `deployment.yaml` and `service.yaml` under a folder called `Kubernetes` in your GitHub repo.

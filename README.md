@@ -369,6 +369,16 @@ pipeline {
 
 ---
 
+----
+## Cleanup
+1--Delete EKS Cluster
+```eksctl delete cluster --region=eu-south-1 --name=swiggy-clone```
+
+2--Delete EC2 Instance with below Terraform Command
+```terraform destroy```
+
+----
+
 ## 📚 References
 
 - [Jenkins Docs](https://www.jenkins.io/doc/)

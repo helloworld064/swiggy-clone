@@ -25,7 +25,7 @@ resource "aws_instance" "jenkins_server" {
 
 ---
 
-## ⚙️ Step 2: Install Jenkins on EC2
+## ⚙️ Step 2: Install Jenkins, Docker and Trivy on EC2
 
 ```bash
 sudo apt update && sudo apt install -y openjdk-17-jdk
@@ -38,6 +38,51 @@ sudo systemctl enable jenkins
 sudo cat /var/lib/jenkins/secrets/initialAdminPassword
 ```
 
+## ⚙️ Install Docker
+```
+sudo apt install -y \
+    ca-certificates \
+    curl \
+    gnupg \
+    lsb-release
+
+sudo mkdir -p /etc/apt/keyrings
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | \
+    sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+
+echo \
+  "deb [arch=$(dpkg --print-architecture) \
+  signed-by=/etc/apt/keyrings/docker.gpg] \
+  https://download.docker.com/linux/ubuntu \
+  $(lsb_release -cs) stable" | \
+  sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+sudo apt update -y
+sudo apt install -y docker-ce docker-ce-cli containerd.io
+
+echo "👤 Adding Jenkins user to Docker group..."
+sudo usermod -aG docker jenkins
+sudo usermod -aG docker $USER
+
+echo "🔄 Restarting Docker..."
+sudo systemctl enable docker
+sudo systemctl restart docker
+```
+## ⚙️ Install Trivy
+```
+sudo apt install -y wget apt-transport-https gnupg lsb-release
+
+wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | \
+    sudo gpg --dearmor -o /usr/share/keyrings/trivy.gpg
+
+echo "deb [signed-by=/usr/share/keyrings/trivy.gpg] \
+  https://aquasecurity.github.io/trivy-repo/deb \
+  $(lsb_release -cs) main" | \
+  sudo tee /etc/apt/sources.list.d/trivy.list > /dev/null
+
+sudo apt update -y
+sudo apt install -y trivy
+```
 ---
 
 ## 🐳 Step 3: Install SonarQube via Docker

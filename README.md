@@ -1,3 +1,7 @@
+![swiggy_with_ssl](https://github.com/user-attachments/assets/d6dadf48-4634-4d98-8685-dc6722c78a74)
+
+![swiggy_with_jenkins](https://github.com/user-attachments/assets/0470f07b-41cf-467c-982c-57d568e1da8e)
+
 
 
 This project demonstrates how to build a complete CI/CD pipeline using:
